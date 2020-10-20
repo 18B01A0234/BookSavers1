@@ -25,6 +25,7 @@ public class Book {
 	private String authorName;
 	private String bookImage;
 	private double bookPrice;
+	private String selltype;
 	
 	@OneToMany(mappedBy="book",fetch = FetchType.LAZY)
 	List<OrderDetails> orderdetailsList = new ArrayList<OrderDetails>();
@@ -95,6 +96,14 @@ public class Book {
 
 	public void setBookImage(String bookImage) {
 		this.bookImage = bookImage;
+	}
+
+	public String getSelltype() {
+		return selltype;
+	}
+
+	public void setSelltype(String selltype) {
+		this.selltype = selltype;
 	}
 	
 	
