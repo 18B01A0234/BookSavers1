@@ -1,5 +1,9 @@
 package com.ts;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -10,6 +14,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.dao.BookDAO;
 import com.dao.UserDAO;
@@ -98,6 +105,39 @@ public class MyResource {
 	
 	}
 	@Path("registerBook")
+	@POST
+	@Consumes({MediaType.MULTIPART_FORM_DATA})
+	public void registerBook(@FormDataParam("bookImage") InputStream fileInputStream, @FormDataParam("bookImage") FormDataContentDisposition
+			formDataConnectionDisposition, @FormDataParam("bookName") String bookName, @FormDataParam("authorName") String authorName, @FormDataParam("bookPrice") Double bookPrice, @FormDataParam("categoryName") String categoryName,@FormDataParam("selltype") String selltype ) throws IOException{
+			int read = 0;
+			byte[] bytes = new byte[1024];
+			
+			String path = this.getClass().getClassLoader().getResource("").getPath();
+			String pathArr[] = path.split("/WEB-INF/classes/"); 
+			FileOutputStream out = new FileOutputStream(new File(pathArr[0]+"/Image/",formDataConnectionDisposition.getFileName()));
+			
+			while((read = fileInputStream.read(bytes))!= -1){
+				out.write(bytes,0,read);
+			}
+			out.flush();
+			out.close();
+			
+			Book book = new Book();
+			book.setBookName(bookName);
+			book.setCategoryName(categoryName);
+			book.setAuthorName(authorName);
+			book.setBookImage(formDataConnectionDisposition.getFileName());
+			book.setBookPrice(bookPrice);
+			book.setSelltype(selltype);
+			
+			
+			BookDAO bookDao = new BookDAO();
+			bookDao.register(book);
+			
+			
+	}
+	
+	/*@Path("registerBook")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void registerBook(Book book) {
